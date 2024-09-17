@@ -29,7 +29,6 @@ router.post("/signup", validateMiddleware(userSchema), async (req, res) => {
       password,
     });
 
-    // Sign the token with the MongoDB _id
     const token = jwt.sign({ userId: newUser._id }, JWT_SECRET, {
       expiresIn: "1h",
     });
@@ -39,8 +38,10 @@ router.post("/signup", validateMiddleware(userSchema), async (req, res) => {
       token: token,
     });
   } catch (error) {
+    console.error("Error during signup:", error); // Log the error details
     return res.status(500).json({
       message: "Some Error Occurred",
+      error: error.message, // Include error message in response for debugging
     });
   }
 });
@@ -62,7 +63,7 @@ router.post("/signin", validateMiddleware(signinSchema), async (req, res) => {
     });
 
     return res.status(200).json({
-      message: "User Signin Successfully",
+      message: "User Signed In Successfully",
       token: token,
     });
   } catch (error) {
@@ -73,32 +74,35 @@ router.post("/signin", validateMiddleware(signinSchema), async (req, res) => {
 });
 
 // Get Todos Route
-router.get("/todos", authMiddleware(), async (req, res) => {
+router.get("/todos", authMiddleware, async (req, res) => {
   const userId = req.userId;
 
   try {
-    const todos = await User.findById().populate("todos");
+    const user = await User.findById(userId).populate("todos"); // Use userId here
 
-    if (!todos) {
+    if (!user) {
       return res.status(400).json({
         message: "No User found with todos",
       });
     }
 
-    return res.status(200).json(todos.todos);
+    return res.status(200).json(user.todos);
   } catch (error) {
+    console.error("The error is " + error);
     return res.status(500).json({
-      message: "Some Error Occured",
+      message: "Some Error Occurred",
+      error: error.message,
     });
   }
 });
 
+// Add Todo Route
 router.post(
   "/addTodo",
-  authMiddleware(),
+  authMiddleware,
   validateMiddleware(todoSchema),
   async (req, res) => {
-    const userId = req.userID;
+    const userId = req.userId; // Corrected to match the field set by authMiddleware
     const { title, description, completed } = req.body;
 
     try {
@@ -127,50 +131,30 @@ router.post(
       });
     } catch (error) {
       return res.status(500).json({
-        message: "Some Error Occured",
+        message: "Some Error Occurred",
       });
     }
   }
 );
 
-// OTHER WAY TO GET TODOS
-
-// app.get("/todos/:userId", async (req, res) => {
-//   const userId = req.params.userId; // Extract userId from request params
-
-//   try {
-//     // Step 1: Find the user by their ID
-//     const user = await User.findById(userId);
-
-//     // If the user is not found
-//     if (!user) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-
-//     // Step 2: Fetch the todos from the Todo collection using the array of ObjectId(s)
-//     const todos = await Todo.find({ _id: { $in: user.todos } });
-
-//     // Return the fetched todos
-//     return res.status(200).json(todos);
-//   } catch (error) {
-//     // Catch any errors and send a 500 response
-//     return res.status(500).json({ message: "Some error occurred", error });
-//   }
-// });
-
+// Update Todo Route
 router.put(
   "/updateTodo",
-  authMiddleware(),
+  authMiddleware,
   validateMiddleware(todoSchema),
   async (req, res) => {
-    const { id, title, description } = req.body;
+    const { id, title, description, completed } = req.body;
 
     try {
-      const updatedTodo = await Todo.findByIdAndUpdate(
-        id,
-        { title, description }, // Correct format for the update object
-        { new: true } // Options should be passed here
-      );
+      // Create an update object based on which fields are present
+      const updateData = {};
+      if (title !== undefined) updateData.title = title;
+      if (description !== undefined) updateData.description = description;
+      if (completed !== undefined) updateData.completed = completed;
+
+      const updatedTodo = await Todo.findByIdAndUpdate(id, updateData, {
+        new: true,
+      });
 
       if (!updatedTodo) {
         return res.status(404).json({ error: "Todo not found" });
@@ -183,7 +167,28 @@ router.put(
   }
 );
 
-router.delete("/complete", authMiddleware(), async (req, res) => {
+router.put("/completeTodo", authMiddleware, async (req, res) => {
+  const { id } = req.body;
+
+  try {
+    const updatedTodo = await Todo.findByIdAndUpdate(
+      id,
+      { completed: true },
+      { new: true }
+    );
+
+    if (!updatedTodo) {
+      return res.status(404).json({ error: "Todo not found" });
+    }
+
+    res.status(200).json(updatedTodo);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to complete todo" });
+  }
+});
+
+// Delete Todo Route
+router.delete("/complete", authMiddleware, async (req, res) => {
   const { id } = req.body; // Extract the todo id from the request body
 
   try {

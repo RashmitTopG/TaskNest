@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const JWT_SECRET = require("../config");
 
 const authMiddleware = (req, res, next) => {
-  const authHeader = req.authorization;
+  const authHeader = req.headers.authorization;
 
   if (!authHeader) {
     return res.status(401).json({
@@ -12,7 +12,7 @@ const authMiddleware = (req, res, next) => {
 
   const words = authHeader.split(" ");
 
-  if (words[0] != "Bearer" || words.lenght !== 2) {
+  if (words[0] !== "Bearer" || words.length !== 2) {
     return res.status(401).json({
       message: "Invalid Token Format",
     });
@@ -32,10 +32,12 @@ const authMiddleware = (req, res, next) => {
       });
     }
   } catch (error) {
+    console.error("The Error is " + error);
     res.status(500).json({
-      message: "Some Error Occured",
+      message: "Some Error Occurred",
+      error: error.message,
     });
   }
 };
 
-module.exports = authMiddleware;
+module.exports = authMiddleware; // Ensure this is correct
