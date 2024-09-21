@@ -47,7 +47,7 @@ router.post("/signup", validateMiddleware(userSchema), async (req, res) => {
 });
 
 // Signin Route
-router.post("/signin", validateMiddleware(signinSchema), async (req, res) => {
+router.post("/login", validateMiddleware(signinSchema), async (req, res) => {
   const { username, password } = req.body;
 
   try {

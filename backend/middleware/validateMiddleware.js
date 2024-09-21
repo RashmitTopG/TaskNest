@@ -1,4 +1,5 @@
 const zod = require("zod");
+const { default: errorMap } = require("zod/locales/en.js");
 
 const validateMiddleware = (schema) => (req, res, next) => {
   try {
@@ -6,7 +7,10 @@ const validateMiddleware = (schema) => (req, res, next) => {
     if (!result.success) {
       return res.status(400).json({
         message: "Validation Error",
-        errors: result.error.errors,
+        errors: result.error.errors.map((err) => ({
+          path: err.path.join("."), // Path of the field with the error
+          message: err.message, // Error message
+        })),
       });
     }
     next();
@@ -19,10 +23,10 @@ const validateMiddleware = (schema) => (req, res, next) => {
 };
 
 const userSchema = zod.object({
-  firstName: zod.string().max(30),
-  lastName: zod.string().max(30),
-  username: zod.string().email(),
-  password: zod.string().min(8).max(20),
+  firstName: zod.string().min(1).max(30), // Should not be empty
+  lastName: zod.string().min(1).max(30), // Should not be empty
+  username: zod.string().email().min(1), // Should not be empty and must be a valid email
+  password: zod.string().min(8).max(20), // Length constraints
 });
 
 const signinSchema = zod.object({

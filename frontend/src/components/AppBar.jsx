@@ -19,6 +19,13 @@ export function AppBar() {
       >
         Signup Page
       </button>
+      <button
+        onClick={() => {
+          navigate("/login");
+        }}
+      >
+        Login Page
+      </button>
     </div>
   );
 }
