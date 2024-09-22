@@ -1,7 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export function Signup() {
+  const navigate = useNavigate();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUserName] = useState("");
@@ -13,27 +15,32 @@ export function Signup() {
     setError(""); // Reset error state
 
     try {
-      const response = await submit(); // Call the submit function
-      console.log("Signup Response:", response);
+      const result = await axios.post("http://localhost:3000/user/signup", {
+        firstName,
+        lastName,
+        username,
+        password,
+      });
 
-      // Store token in localStorage
-      if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
+      // console.log(result);
+
+      if (result.data.success) {
+        localStorage.setItem("token", result.data.token);
+        navigate("/");
+      } else {
+        setError("Signup failed");
       }
-    } catch (error) {
-      window.alert(error.response?.data.message);
-      console.error("Error during signup:", error.response?.data);
-      setError(error.response?.data.message || "An error occurred"); // Set error message
-    }
-  };
 
-  const submit = async () => {
-    return axios.post("http://localhost:3000/user/signup", {
-      firstName,
-      lastName,
-      username,
-      password,
-    });
+      // Reset input fields
+      setFirstName("");
+      setLastName("");
+      setUserName("");
+      setPassword("");
+    } catch (error) {
+      window.alert(error.response?.data.message || "Signup failed");
+      console.error("Error during signup:", error.response?.data);
+      setError(error.response?.data.message || "An error occurred");
+    }
   };
 
   return (
@@ -43,7 +50,7 @@ export function Signup() {
         className="bg-white p-8 rounded-lg shadow-lg w-96"
       >
         <h2 className="text-2xl font-bold text-center mb-6">Sign Up</h2>
-        {error && <div className="mb-4 text-red-500">{error}</div>}{" "}
+        {error && <div className="mb-4 text-red-500">{error}</div>}
         {/* Error message display */}
         <div className="mb-4">
           <input

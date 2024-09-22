@@ -35,12 +35,14 @@ router.post("/signup", validateMiddleware(userSchema), async (req, res) => {
 
     return res.status(200).json({
       message: "User Created Successfully",
+      success: true,
       token: token,
     });
   } catch (error) {
     console.error("Error during signup:", error); // Log the error details
     return res.status(500).json({
       message: "Some Error Occurred",
+      success: false,
       error: error.message, // Include error message in response for debugging
     });
   }
@@ -55,6 +57,7 @@ router.post("/login", validateMiddleware(signinSchema), async (req, res) => {
     if (!response) {
       return res.status(400).json({
         message: "No User Found with the credentials",
+        success: false,
       });
     }
 
@@ -64,6 +67,7 @@ router.post("/login", validateMiddleware(signinSchema), async (req, res) => {
 
     return res.status(200).json({
       message: "User Signed In Successfully",
+      success: true,
       token: token,
     });
   } catch (error) {
@@ -86,7 +90,9 @@ router.get("/todos", authMiddleware, async (req, res) => {
       });
     }
 
-    return res.status(200).json(user.todos);
+    return res.status(200).json({
+      todos: user.todos,
+    });
   } catch (error) {
     console.error("The error is " + error);
     return res.status(500).json({
