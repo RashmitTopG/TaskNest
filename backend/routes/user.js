@@ -29,9 +29,7 @@ router.post("/signup", validateMiddleware(userSchema), async (req, res) => {
       password,
     });
 
-    const token = jwt.sign({ userId: newUser._id }, JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign({ userId: newUser._id }, JWT_SECRET, {});
 
     return res.status(200).json({
       message: "User Created Successfully",
@@ -61,9 +59,7 @@ router.post("/login", validateMiddleware(signinSchema), async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ userId: response._id }, JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign({ userId: response._id }, JWT_SECRET, {});
 
     return res.status(200).json({
       message: "User Signed In Successfully",
@@ -173,8 +169,8 @@ router.put(
   }
 );
 
-router.put("/completeTodo", authMiddleware, async (req, res) => {
-  const { id } = req.body;
+router.put("/completeTodo/:id", authMiddleware, async (req, res) => {
+  const { id } = req.params; // Now getting id from the URL params
 
   try {
     const updatedTodo = await Todo.findByIdAndUpdate(
@@ -194,8 +190,8 @@ router.put("/completeTodo", authMiddleware, async (req, res) => {
 });
 
 // Delete Todo Route
-router.delete("/complete", authMiddleware, async (req, res) => {
-  const { id } = req.body; // Extract the todo id from the request body
+router.delete("/delete/:id", authMiddleware, async (req, res) => {
+  const { id } = req.params; // Extract the todo id from the request body
 
   try {
     const deletedTodo = await Todo.findByIdAndDelete(id); // Find and delete the todo by id

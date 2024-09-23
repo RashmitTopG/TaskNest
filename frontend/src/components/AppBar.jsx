@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export function AppBar() {
@@ -26,6 +27,7 @@ export function AppBar() {
       >
         Login Page
       </button>
+      {/* <button onClick={navigate("/todos")}>Todos</button> */}
     </div>
   );
 }
