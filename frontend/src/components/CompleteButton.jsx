@@ -7,6 +7,7 @@ export function CompleteButton({ todoId }) {
       // Send todoId in the URL as a parameter
       await axios.put(
         `http://localhost:3000/user/completeTodo/${todoId}`, // Pass todoId in the URL
+        {},
         {
           headers: {
             "Content-Type": "application/json",

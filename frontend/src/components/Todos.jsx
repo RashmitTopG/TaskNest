@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { CompleteButton } from "./CompleteButton";
 import { DeleteButton } from "./DeleteButton";
-
+import { AddTodo } from "./AddTodo";
 export function Todos() {
   const [todos, setTodos] = useState([]);
 
@@ -22,7 +22,11 @@ export function Todos() {
     };
 
     fetchTodos();
-  }, [todos]);
+  }, [todos]); // Run only once on mount
+
+  const addTodo = (newTodo) => {
+    setTodos((prevTodos) => [...prevTodos, newTodo]); // Update state with the new todo
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 py-10">
@@ -41,7 +45,7 @@ export function Todos() {
                   <p className="text-gray-600 text-lg">{todo.description}</p>
                 </div>
                 <CompleteButton todoId={todo._id} />
-                <DeleteButton todoId={todo._id}></DeleteButton>
+                <DeleteButton todoId={todo._id} />
               </div>
               <p
                 className={`mt-2 text-lg ${
@@ -56,6 +60,7 @@ export function Todos() {
           ))}
         </ul>
       </div>
+      <AddTodo></AddTodo>
     </div>
   );
 }
