@@ -37,7 +37,7 @@ const signinSchema = zod.object({
 const todoSchema = zod.object({
   title: zod.string().min(1, "Title is required").max(30),
   description: zod.string().optional(),
-  completed: zod.boolean(),
+  completed: zod.boolean().optional(),
 });
 
 module.exports = {

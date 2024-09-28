@@ -1,6 +1,9 @@
 import axios from "axios";
+import { useContext } from "react";
+import { TodoContext } from "../context";
 
 export function DeleteButton({ todoId }) {
+  const { render, setRender } = useContext(TodoContext);
   const onDelete = async () => {
     try {
       await axios.delete(`http://localhost:3000/user/delete/${todoId}`, {
@@ -8,6 +11,7 @@ export function DeleteButton({ todoId }) {
           Authorization: "Bearer " + localStorage.getItem("token"),
         },
       });
+      setRender((prev) => !prev);
     } catch (error) {
       console.error("Some Error Occured " + error);
     }

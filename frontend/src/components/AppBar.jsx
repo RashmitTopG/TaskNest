@@ -1,6 +1,5 @@
-import { Router, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Logout } from "./Logout";
-import { Todos } from "./Todos";
 
 export function AppBar() {
   const navigate = useNavigate();

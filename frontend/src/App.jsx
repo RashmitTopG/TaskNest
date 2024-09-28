@@ -6,26 +6,23 @@ import { Login } from "./components/Login";
 import { AppBar } from "./components/AppBar";
 import { Todos } from "./components/Todos";
 import { NewHome } from "./components/NewHome";
+import { TodoRender } from "./context";
 
 function App() {
-  console.log("App Rerenders");
-
   const token = localStorage.getItem("token");
 
   return (
     <BrowserRouter>
-      <AppBar />
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/todos" element={<Todos />} />
-        {token ? (
-          <Route path="/" element={<NewHome />} />
-        ) : (
-          <Route path="/" element={<Landing />} />
-        )}
-        <Route path="/newHome" element={<NewHome />} />
-      </Routes>
+      <TodoRender>
+        <AppBar />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/todos" element={<Todos />} />
+          <Route path="/" element={token ? <NewHome /> : <Landing />} />
+          <Route path="/newHome" element={<NewHome />} />
+        </Routes>
+      </TodoRender>
     </BrowserRouter>
   );
 }

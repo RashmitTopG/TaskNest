@@ -1,66 +1,60 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useContext, useEffect, useState } from "react";
+import { TodoContext } from "../context";
 import { CompleteButton } from "./CompleteButton";
 import { DeleteButton } from "./DeleteButton";
+import axios from "axios";
 import { AddTodo } from "./AddTodo";
+import { EditTodo } from "./EditTodo"; // Import the new EditTodos component
+
 export function Todos() {
+  const { render, setRender } = useContext(TodoContext);
   const [todos, setTodos] = useState([]);
 
   useEffect(() => {
     const fetchTodos = async () => {
       try {
-        const result = await axios.get("http://localhost:3000/user/todos", {
+        const response = await axios.get("http://localhost:3000/user/todos", {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("token"),
           },
         });
-
-        setTodos(result.data.todos);
+        setTodos(response.data.todos);
       } catch (error) {
         console.error("Error fetching todos:", error);
       }
     };
-
     fetchTodos();
-  }, [todos]); // Run only once on mount
+  }, [render]);
 
-  const addTodo = (newTodo) => {
-    setTodos((prevTodos) => [...prevTodos, newTodo]); // Update state with the new todo
+  const handleEditComplete = () => {
+    setRender((prev) => !prev); // Trigger re-fetching todos on edit completion
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 py-10">
-      <div className="max-w-4xl mx-auto p-8 bg-white rounded-lg shadow-lg">
-        <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">
-          Your Todos
-        </h1>
-        <ul className="space-y-6">
-          {todos.map((todo) => (
-            <li key={todo._id} className="border-b border-gray-300 pb-4">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-                    {todo.title}
-                  </h2>
-                  <p className="text-gray-600 text-lg">{todo.description}</p>
-                </div>
-                <CompleteButton todoId={todo._id} />
-                <DeleteButton todoId={todo._id} />
-              </div>
-              <p
-                className={`mt-2 text-lg ${
-                  todo.completed
-                    ? "text-green-500 font-medium"
-                    : "text-red-500 font-medium"
+    <div className="max-w-2xl mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4 text-center">Your Todos</h1>
+      <div className="space-y-4">
+        {todos.map((todo) => (
+          <div
+            key={todo._id}
+            className="bg-white p-4 rounded shadow-md flex items-center justify-between"
+          >
+            <div className="flex-1">
+              <EditTodo todo={todo} onEditComplete={handleEditComplete} />
+              <div
+                className={`text-sm ${
+                  todo.completed ? "text-green-600" : "text-red-600"
                 }`}
               >
                 {todo.completed ? "Completed" : "Not Completed"}
-              </p>
-            </li>
-          ))}
-        </ul>
+              </div>
+              <CompleteButton todoId={todo._id} />
+              <DeleteButton todoId={todo._id} />
+            </div>
+          </div>
+        ))}
       </div>
-      <AddTodo></AddTodo>
+      <AddTodo />
     </div>
   );
 }

@@ -29,7 +29,9 @@ router.post("/signup", validateMiddleware(userSchema), async (req, res) => {
       password,
     });
 
-    const token = jwt.sign({ userId: newUser._id }, JWT_SECRET, {});
+    const token = jwt.sign({ userId: newUser._id }, JWT_SECRET, {
+      expiresIn: "1h",
+    });
 
     return res.status(200).json({
       message: "User Created Successfully",
@@ -59,7 +61,9 @@ router.post("/login", validateMiddleware(signinSchema), async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ userId: response._id }, JWT_SECRET, {});
+    const token = jwt.sign({ userId: response._id }, JWT_SECRET, {
+      expiresIn: "1h",
+    });
 
     return res.status(200).json({
       message: "User Signed In Successfully",
@@ -141,11 +145,12 @@ router.post(
 
 // Update Todo Route
 router.put(
-  "/updateTodo",
+  "/updateTodo/:id",
   authMiddleware,
   validateMiddleware(todoSchema),
   async (req, res) => {
-    const { id, title, description, completed } = req.body;
+    const { title, description, completed } = req.body;
+    const { id } = req.params;
 
     try {
       // Create an update object based on which fields are present
@@ -170,13 +175,14 @@ router.put(
 );
 
 router.put("/completeTodo/:id", authMiddleware, async (req, res) => {
-  const { id } = req.params; // Now getting id from the URL params
+  const { id } = req.params;
+  const { completed } = req.body; // Get the completed state from the request body
 
   try {
     const updatedTodo = await Todo.findByIdAndUpdate(
       id,
-      { completed: true },
-      { new: true }
+      { completed }, // Use the completed state from the request
+      { new: true } // Return the updated document
     );
 
     if (!updatedTodo) {
@@ -185,7 +191,7 @@ router.put("/completeTodo/:id", authMiddleware, async (req, res) => {
 
     res.status(200).json(updatedTodo);
   } catch (error) {
-    res.status(500).json({ error: "Failed to complete todo" });
+    res.status(500).json({ error: "Failed to update todo" });
   }
 });
 
