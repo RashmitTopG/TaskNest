@@ -7,7 +7,7 @@ export function Landing() {
     <div className="flex items-center justify-center h-screen bg-gradient-to-r from-blue-500 to-indigo-600">
       <div className="text-center p-10 bg-white rounded-lg shadow-lg">
         <h1 className="text-4xl font-bold text-gray-800 mb-6">
-          Welcome to Our App
+          Welcome to TaskNest
         </h1>
         <p className="text-lg text-gray-600 mb-6">
           The best place to manage your tasks and improve your productivity.

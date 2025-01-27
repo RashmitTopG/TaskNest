@@ -34,7 +34,7 @@ export function Login() {
       const errors = error.response?.data?.errors;
 
       if (Array.isArray(errors) && errors.length > 0) {
-        const [{ message }] = errors; // Destructure first error message
+        const [{ message }] = errors;
         window.alert(message || "Login failed");
         setError(message || "An error occurred");
       } else {

@@ -1,20 +1,16 @@
-// components/CompleteButton.jsx
-
 import axios from "axios";
 import { useContext } from "react";
 import { TodoContext } from "../context";
 
 // CompleteButton component to mark a todo as complete
 export function CompleteButton({ todoId, isCompleted }) {
-  // Pass isCompleted as a prop
   const { render, setRender } = useContext(TodoContext);
 
   const onClick = async () => {
     try {
-      // Send todoId in the URL and toggle the 'completed' state
       await axios.put(
         `http://localhost:3000/user/completeTodo/${todoId}`,
-        { completed: !isCompleted }, // Toggle the completed state
+        { completed: !isCompleted },
         {
           headers: {
             "Content-Type": "application/json",
@@ -22,11 +18,10 @@ export function CompleteButton({ todoId, isCompleted }) {
           },
         }
       );
-
       console.log(
         isCompleted ? "Todo marked as incomplete" : "Todo marked as complete"
       );
-      setRender((prev) => !prev); // Re-render the todo list
+      setRender((prev) => !prev);
     } catch (error) {
       console.log("Error While Completing Todo: " + error);
     }
@@ -35,9 +30,11 @@ export function CompleteButton({ todoId, isCompleted }) {
   return (
     <button
       onClick={onClick}
-      className={`px-4 py-2 rounded ${
-        isCompleted ? "bg-gray-500" : "bg-red-500"
-      } text-white`}
+      className={`px-6 py-2 rounded-lg shadow-md text-white font-semibold ${
+        isCompleted
+          ? "bg-gray-500 hover:bg-gray-600"
+          : "bg-red-500 hover:bg-red-600"
+      } transition duration-300 ease-in-out transform hover:scale-105`}
     >
       {isCompleted ? "Undo" : "Complete"}
     </button>

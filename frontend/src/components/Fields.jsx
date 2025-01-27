@@ -45,24 +45,34 @@ export function Fields({ onTodoAdded }) {
   };
 
   return (
-    <div>
+    <div className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+      <h2 className="text-lg font-semibold mb-4">Add a New Todo</h2>
       <input
         type="text"
         placeholder="Enter Title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
+        className="border border-gray-300 rounded p-3 w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <input
         type="text"
         placeholder="Enter Description"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
+        className="border border-gray-300 rounded p-3 w-full mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
-      <button onClick={clickHere}>Add Todo</button>
+      <button
+        onClick={clickHere}
+        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
+      >
+        Add Todo
+      </button>
 
       {/* Show success or error messages */}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
+      {error && <p className="text-red-500 mt-2">{error}</p>}
+      {successMessage && (
+        <p className="text-green-500 mt-2">{successMessage}</p>
+      )}
     </div>
   );
 }
