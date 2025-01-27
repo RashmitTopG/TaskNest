@@ -16,8 +16,19 @@ jobs:
         with:
           node-version: '20'
       
-      - name: Install Dependencies
-        run: npm install
+      - name: Install Dependencies in Frontend
+        run: |
+          cd frontend
+          npm install
+      
+      - name: Install Dependencies in Backend
+        run: |
+          cd backend
+          npm install
 
-      - name: Run Build
-        run: npm run build
+      - name: Run Frontend Build
+        run: |
+          cd frontend
+          npm run build
+      
+      
